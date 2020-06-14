@@ -1,0 +1,10 @@
+# Edit or remove this file as needed.
+# Docs at https://github.com/drush-ops/drush/blob/master/examples/example.site.yml
+
+local:
+  root: /var/www/docroot
+  uri: https://drupal.test
+  paths:
+    - files: /var/www/docroot/sites/default/files
+    - drush-script: /var/www/vendor/drush/drush/drush
+

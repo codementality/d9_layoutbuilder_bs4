@@ -99,13 +99,13 @@ devclean: ##@initialize Halts Docker and deletes project related volumes (destro
 
 import-config: ##@drush Import Configuration Manager yaml files
 	@make setos
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local cim vcs -y
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local csim dev -y
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local cim -y
+	#@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local csim dev -y
 
 export-config: ##@drush Export Configuration Manager yaml files
 	@make setos
 	@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local cex -y
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local csex dev -y
+	#@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local csex dev -y
 
 composer-install: ##@composer Run Composer Install
 	@docker-compose -f docker-compose.yml -f $(dockerfile) exec php composer install --working-dir=$(project_root)

@@ -19,13 +19,21 @@
         }
     ],
     "require": {
+        "bower-asset/dropzonejs": "^4.3",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1.6",
+        "drupal/block_blacklist": "^1.1",
         "drupal/bootstrap4": "^2.0",
+        "drupal/components": "^1.1",
         "drupal/core-composer-scaffold": "^8.9",
         "drupal/core-recommended": "^8.9",
+        "drupal/dropzonejs": "^2.1",
         "drupal/ds": "^3.7",
         "drupal/field_group": "^3.1",
+        "drupal/module_filter": "^3.1",
+        "drupal/quicklink": "^1.3",
+        "drupal/twig_tweak": "^2.6",
+        "drupal/views_layout": "^1.2",
         "drush/drush": "^10.2",
         "oomphinc/composer-installers-extender": "^1.1",
         "wikimedia/composer-merge-plugin": "^1.4"
@@ -104,11 +112,13 @@
     "scripts": {
         "post-install-cmd": [
             "if [ -n $TRAVIS ]; then find ./docroot -name .git -type d | xargs rm -rf; fi",
-            "if [ -n $TRAVIS ]; then find ./vendor -name .git -type d | xargs rm -rf; fi"
+            "if [ -n $TRAVIS ]; then find ./vendor -name .git -type d | xargs rm -rf; fi",
+            "if [ -d \"docroot/libraries/dropzonejs\" ]; then rm -Rf docroot/libraries/dropzonejs/test; rm -Rf docroot/libraries/dropzonejs/test.sh; fi"
         ],
         "post-update-cmd": [
             "if [ -n $TRAVIS ]; then find ./docroot -name .git -type d | xargs rm -rf; fi",
-            "if [ -n $TRAVIS ]; then find ./vendor -name .git -type d | xargs rm -rf; fi"
+            "if [ -n $TRAVIS ]; then find ./vendor -name .git -type d | xargs rm -rf; fi",
+            "if [ -d \"docroot/libraries/dropzonejs\" ]; then rm -Rf docroot/libraries/dropzonejs/test; rm -Rf docroot/libraries/dropzonejs/test.sh; fi"
         ]
     }
 }

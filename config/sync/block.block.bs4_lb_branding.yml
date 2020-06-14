@@ -1,0 +1,25 @@
+uuid: 01ef2851-3730-46a9-a906-2a266701a51a
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - bs4_lb
+_core:
+  default_config_hash: NDwadleLD3YVSbDUaakxyYZyINYtkFtOVGShfq4kWy8
+id: bs4_lb_branding
+theme: bs4_lb
+region: header
+weight: -6
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  provider: system
+  label_display: '0'
+  use_site_logo: true
+  use_site_name: true
+  use_site_slogan: true
+visibility: {  }

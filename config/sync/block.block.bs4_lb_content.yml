@@ -1,0 +1,22 @@
+uuid: 16391bdb-748f-475e-95a5-071aed22eb38
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - bs4_lb
+_core:
+  default_config_hash: 9EoWV2Lot6FVSr50t4hoKgiz1LIXYWNG-IIPYsWxBqo
+id: bs4_lb_content
+theme: bs4_lb
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  provider: system
+  label_display: '0'
+visibility: {  }

@@ -2,6 +2,7 @@
 /docroot/core/
 /docroot/modules/contrib/
 /docroot/themes/contrib/
+/docroot/libraries/
 /docroot/profiles/contrib/
 /docroot/autoload.php
 /docroot/index.php
