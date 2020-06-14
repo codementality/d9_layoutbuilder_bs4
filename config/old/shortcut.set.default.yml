@@ -1,0 +1,8 @@
+uuid: deb55319-e0e1-4b99-8168-710030ce0166
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: U5VlGjd_SfV0Qm_EfnaynOfc549cNscFAx48JfYoMRI
+id: default
+label: Default
