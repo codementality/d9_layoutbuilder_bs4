@@ -1,0 +1,18 @@
+version: '2'
+services:
+  nginx:
+    volumes:
+      - web-sites:/var/www
+  php:
+    volumes:
+      #- ./:/var/www
+      - web-sites:/var/www
+volumes:
+## persistent data volume for mysql data
+  web-sites:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":$PWD"
+

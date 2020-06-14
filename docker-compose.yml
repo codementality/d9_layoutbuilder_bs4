@@ -1,0 +1,46 @@
+version: '2'
+services:
+  nginx:
+    hostname: drupal.test
+    build: docker/nginx
+    ports:
+      - 8080:80
+    environment:
+      TZ: 'EST5EDT'
+  php:
+    build: docker/php
+    environment:
+      TZ: 'EST5EDT'
+      COMPOSER_MEMORY_LIMIT: -1
+  db:
+    image: mysql:5.7
+    environment:
+      #MYSQL_INITDB_SKIP_TZINFO: 1
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: drupal
+      MYSQL_DATABASE: drupal
+      MYSQL_ROOT_PASSWORD: root
+      #TZ: 'EST5EDT'
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./databases:/docker-entrypoint-initdb.d
+    #ports:
+    #  - 33306:3306
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025
+  selenium:
+    image: selenium/standalone-chrome:3.14.0
+    ports:
+      - 4444:4444
+    volumes:
+      - /dev/shm:/dev/shm
+    environment:
+      TZ: 'EST5EDT'
+    depends_on:
+      - nginx
+volumes:
+## persistent data volume for mysql data
+  dbdata:
+    driver: local
