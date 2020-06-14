@@ -35,6 +35,6 @@ RUN apt-get update -qq && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer --version && \
 # Create working directory
-    mkdir -p /var/www/www
+    mkdir -p /var/www/docroot
 
-WORKDIR /var/www/www
+WORKDIR /var/www/docroot

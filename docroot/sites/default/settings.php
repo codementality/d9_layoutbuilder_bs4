@@ -802,4 +802,4 @@ $databases['default']['default'] = array (
   'driver' => 'mysql',
 );
 
-$settings['config_sync_Idirectory'] = '../config/sync';
+$settings['config_sync_directory'] = '../config/sync';
