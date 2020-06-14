@@ -1,0 +1,112 @@
+{
+    "name": "drupal/recommended-project",
+    "description": "Project template for Drupal 8 projects with a relocated document root",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/drupal",
+    "support": {
+        "docs": "https://www.drupal.org/docs/user_guide/en/index.html",
+        "chat": "https://www.drupal.org/node/314178"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "require": {
+        "composer/installers": "^1.2",
+        "cweagans/composer-patches": "^1.6",
+        "drupal/bootstrap4": "^2.0",
+        "drupal/core-composer-scaffold": "^8.9",
+        "drupal/core-recommended": "^8.9",
+        "drush/drush": "^10.2",
+        "oomphinc/composer-installers-extender": "^1.1",
+        "wikimedia/composer-merge-plugin": "^1.4"
+    },
+    "require-dev": {
+        "drupal/core-dev": "^8.9",
+        "genesis/behat-fail-aid": "^2.1",
+        "mglaman/drupal-check": "^1.1",
+        "roave/security-advisories": "dev-master",
+        "vanare/behat-cucumber-json-formatter": "~1.1.1"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "enable-patching": true,
+        "drupal-scaffold": {
+            "file-mapping": {
+                "[web-root]/robots.txt": false,
+                "[web-root]/.ht.router.php": false,
+                "[web-root]/example.gitignore": false,
+                "[web-root]/.htaccess": false,
+                "[web-root]/INSTALL.txt": false,
+                "[web-root]/LICENSE.txt": false,
+                "[web-root]/README.txt": false,
+                "[web-root]/web.config": false
+            },
+            "excludes": [
+                "google123.html"
+            ],
+            "initial": {
+                "sites/default/default.services.yml": "docroot/sites/default/default.services.yml",
+                "sites/default/default.settings.php": "docroot/sites/default/default.settings.php",
+                "robots.txt": "docroot/robots.txt",
+                ".htaccess": "docroot/.htaccess"
+            },
+            "omit-defaults": true,
+            "locations": {
+                "web-root": "docroot/"
+            }
+        },
+        "installer-types": [
+            "component",
+            "bower-asset",
+            "npm-asset"
+        ],
+        "installer-paths": {
+            "docroot/core": ["type:drupal-core"],
+            "docroot/modules/contrib/{$name}": ["type:drupal-module"],
+            "docroot/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "docroot/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "docroot/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "docroot/themes/custom/{$name}": ["type:drupal-custom-theme"],
+            "docroot/libraries/{$name}": [
+                "type:drupal-library",
+                "type:npm-asset",
+                "type:bower-asset"
+            ]
+        },
+        "patchLevel": {
+            "drupal/core": "-p2"
+        },
+        "patches": {
+            "drupal/permissions_filter": {
+                "Drupal 9 compatibility":"https://www.drupal.org/files/issues/2020-06-02/3106579-drupal-9-5.patch"
+            }
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "if [ -n $TRAVIS ]; then find ./docroot -name .git -type d | xargs rm -rf; fi",
+            "if [ -n $TRAVIS ]; then find ./vendor -name .git -type d | xargs rm -rf; fi"
+        ],
+        "post-update-cmd": [
+            "if [ -n $TRAVIS ]; then find ./docroot -name .git -type d | xargs rm -rf; fi",
+            "if [ -n $TRAVIS ]; then find ./vendor -name .git -type d | xargs rm -rf; fi"
+        ]
+    }
+}

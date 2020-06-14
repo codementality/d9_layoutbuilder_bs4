@@ -1,0 +1,10 @@
+/vendor/
+/docroot/core/
+/docroot/modules/contrib/
+/docroot/themes/contrib/
+/docroot/profiles/contrib/
+/docroot/autoload.php
+/docroot/index.php
+/docroot/update.php
+/docroot/sites/*/files/
+
