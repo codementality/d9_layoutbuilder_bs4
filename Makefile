@@ -62,8 +62,9 @@ phpcs_config = --ignore=**/node_modules/*,*.min.js,*.css,*features.*.inc,*.svg,*
 coder_sniffer_path = /var/www/vendor/drupal/coder/coder_sniffer
 project_root = /var/www
 drupal_root = $(project_root)/docroot
-custom_module_location = $(drupal_root)/sites/all/modules/custom/
-custom_theme_location = $(drupal_root)/sites/all/themes/custom/
+custom_module_location = $(drupal_root)/modules/
+custom_theme_location = $(drupal_root)/themes/
+custom_profile_location = $(drupal_root)/profiles/
 # sets URL to $PROJECT_NAME.test, and sets drush alias to $PROJECT_NAME.local
 PROJECT_NAME = drupal
 DIR = ${pwd}
@@ -72,11 +73,17 @@ phpcs:  ##@testing Run CodeSniffer coding standards checks
 	@clear
 	@clear
 	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcs --config-set installed_paths $(coder_sniffer_path)
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcs -d memory_limit=-1 --standard=drupal,drupalPractice --report-width=130 --colors $(custom_module_location) $(custom_theme_location) $(phpcs_config)
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcs -d memory_limit=-1 --standard=drupal,drupalPractice --report-width=130 --colors $(custom_module_location) $(custom_theme_location) $(custom_profile_location) $(phpcs_config)
+
+phpcs-consolidated:
+	@clear
+	@clear
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcs --config-set installed_paths $(coder_sniffer_path)
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcs -d memory_limit=-1 --standard=drupal,drupalPractice --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 --report=summary $(custom_module_location) $(custom_theme_location) $(custom_profile_location) $(phpcs_config)
 
 phpcbf:  ##@testing Automatically correct Coding Standards Violations
 	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcbf --config-set installed_paths $(coder_sniffer_path)
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcbf -d memory_limit=-1 --standard=drupal,drupalPractice $(custom_module_location) $(custom_theme_location) $(phpcs_config)
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpcbf -d memory_limit=-1 --standard=drupal,drupalPractice $(custom_module_location) $(custom_theme_location) $(custom_profile_location) $(phpcs_config)
 
 init: ##@initialize Initialize development environment
 	@clear
@@ -91,7 +98,8 @@ init: ##@initialize Initialize development environment
 	#@docker-compose -f docker-compose.yml -f $(dockerfile) exec php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local sset system.maintenance_mode 0
 	#@make cache-reset
 initialize-db:
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local si standard --db-url=mysql://drupal:drupal@db/drupal --account-name=admin --account-pass=admin --site-name=\"Drupal Test Site\" -y
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local si minimal --db-url=mysql://drupal:drupal@db/drupal --account-name=admin --account-pass=admin --site-name="Drupal Test Site" -y
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/drush @$(PROJECT_NAME).local cset "system.site" uuid "1f067325-a9ac-4335-91ae-1d6c4c1ff767" -y
 devclean: ##@initialize Halts Docker and deletes project related volumes (destroys database and drupal install)
 	@clear
 	@docker-compose -f docker-compose.yml -f ${dockerfile} down --volumes
@@ -171,8 +179,10 @@ wcag2AA-url: ##@testing Running Pa11y-CI tool for wcag2AA compliance against a s
 	@docker-compose -f docker-compose.yml -f $(dockerfile) run pa11y /bin/bash -c "pa11y-ci $(filter-out $@,$(MAKECMDGOALS))"
 
 phpunit:  ##@testing Running Drupal Unit tests
-	@make setos
-	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpunit -c $(project_root)/phpunit.xml.dist
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/phpunit -c $(drupal_root)/core/phpunit.xml.dist
+
+drupal-check:  ##@testing Running Drupal Unit tests
+	@docker-compose -f docker-compose.yml -f $(dockerfile) exec -T php $(project_root)/vendor/bin/drupal-check $(drupal_root)/modules/contrib
 
 test:  ##@testing Execute all test suites
 	@make phpcs

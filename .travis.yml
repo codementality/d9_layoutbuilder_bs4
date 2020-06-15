@@ -38,11 +38,12 @@ before_script:
   - make init 
   # Let's see if we get this far
   - make initialize-db
-
+  # Import configuration
+  - make import-config
   - PROJECT_ROOT=$(pwd)
   - DRUPAL_ROOT=$(pwd)/docroot
 
-  - $PROJECT_ROOT/vendor/bin/phpcs --config-set installed_paths $PROJECT_ROOT/vendor/drupal/coder/coder_sniffer
+  #- $PROJECT_ROOT/vendor/bin/phpcs --config-set installed_paths $PROJECT_ROOT/vendor/drupal/coder/coder_sniffer
 
   # Export web server URL for browser tests.
   #- export SIMPLETEST_BASE_URL=http://localhost:8888
@@ -59,16 +60,17 @@ before_script:
 
 script:
   # Run the PHPUnit tests.
-  - $PROJECT_ROOT/vendor/bin/phpunit -c $DRUPAL_ROOT/core/phpunit.xml.dist --verbose $DRUPAL_ROOT/modules/contrib
+  #- $PROJECT_ROOT/vendor/bin/phpunit -c $DRUPAL_ROOT/core/phpunit.xml.dist --verbose $DRUPAL_ROOT/modules/contrib
+  - make phpunit
 
   # Run the deprecation checks.
-  - $PROJECT_ROOT/vendor/bin/drupal-check $DRUPAL_ROOT/modules/contrib
-
-  # Check for coding standards. First change directory to our module.
-  - cd $DRUPAL_ROOT/modules/contrib
+  #- $PROJECT_ROOT/vendor/bin/drupal-check $DRUPAL_ROOT/modules/contrib
+  - make drupal-check
 
   # Show the violations in detail and do not fail for any errors or warnings.
-  - $PROJECT_ROOT/vendor/bin/phpcs --standard=drupal,drupalPractice --ignore=vendor --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 .
+  #- $PROJECT_ROOT/vendor/bin/phpcs --standard=drupal,drupalPractice --ignore=vendor --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 .
+  - make phpcs
 
   # Run again to give a summary and total count.
-  - $PROJECT_ROOT/vendor/bin/phpcs --standard=drupal,drupalPractice --ignore=vendor --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 --report=summary .
+  - make phpcs-consolidated
+  #- $PROJECT_ROOT/vendor/bin/phpcs --standard=drupal,drupalPractice --ignore=vendor --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 --report=summary .
