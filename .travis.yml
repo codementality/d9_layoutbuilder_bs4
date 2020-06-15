@@ -1,0 +1,81 @@
+os:
+  - linux
+
+dist:  bionic
+
+language: php
+
+# The Travis CI container mode has random functional test fails, so we must use
+# sudo here.
+sudo: true
+
+php:
+  - 7.3
+  - 7.4
+
+services:
+  - mysql
+
+env:
+  global:
+    - SITE=d9_lb_bs4
+    - COMPOSER_MEMORY_LIMIT=-1
+#  matrix:
+#    - DRUPAL_CORE=8.8.x DRUSH_VER=10.0
+#    - DRUPAL_CORE=8.9.x DRUSH_VER=10.0
+#    - DRUPAL_CORE=9.0.x DRUSH_VER=10.0
+
+matrix:
+  fast_finish: true
+
+# Be sure to cache composer downloads.
+cache:
+  directories:
+    - $HOME/.composer
+
+before_script:
+  # Remove Xdebug as we don't need it and it causes
+  # PHP Fatal error:  Maximum function nesting level of '256' reached.
+  # We also don't care if that file exists or not on PHP 7.
+  - phpenv config-rm xdebug.ini || true
+
+  # Create database.
+  - mysql -e "create database $SITE"
+  # Export database variable for kernel tests.
+  - export SIMPLETEST_DB=mysql://root:@127.0.0.1/$SITE
+
+  # Create a new Drupal project using the appropriate version using Composer.
+  - composer install
+  - PROJECT_ROOT=$(pwd)
+  - DRUPAL_ROOT=$(pwd)/docroot
+
+  - $PROJECT_ROOT/vendor/bin/phpcs --config-set installed_paths $PROJECT_ROOT/vendor/drupal/coder/coder_sniffer
+
+  # Export web server URL for browser tests.
+  - export SIMPLETEST_BASE_URL=http://localhost:8888
+
+  # Install the site using Drush and set up some configuration.
+  - $PROJECT_ROOT/vendor/bin/drush site-install standard --yes --account-pass=admin --db-url=$SIMPLETEST_DB
+  - $PROJECT_ROOT/vendor/bin/drush cim -y
+  - $PROJECT_ROOT/vendor/bin/drush config-set system.performance css.preprocess 0 --yes
+  - $PROJECT_ROOT/vendor/bin/drush config-set system.performance js.preprocess 0 --yes
+  - $PROJECT_ROOT/vendor/bin/drush config-set system.logging error_level all --yes
+
+  # Start up a HTTP server for tests.
+  - $PROJECT_ROOT/vendor/bin/drush runserver --default-server=builtin 8888 > /dev/null &
+
+script:
+  # Run the PHPUnit tests.
+  - $PROJECT_ROOT/vendor/bin/phpunit -c $DRUPAL_ROOT/core/phpunit.xml.dist --verbose $DRUPAL_ROOT/modules/contrib
+
+  # Run the deprecation checks.
+  - $PROJECT_ROOT/vendor/bin/drupal-check $DRUPAL_ROOT/modules/contrib
+
+  # Check for coding standards. First change directory to our module.
+  - cd $DRUPAL_ROOT/modules/contrib
+
+  # Show the violations in detail and do not fail for any errors or warnings.
+  - $PROJECT_ROOT/vendor/bin/phpcs --standard=drupal,drupalPractice --ignore=vendor --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 .
+
+  # Run again to give a summary and total count.
+  - $PROJECT_ROOT/vendor/bin/phpcs --standard=drupal,drupalPractice --ignore=vendor --report-width=130 --colors --runtime-set ignore_errors_on_exit 0 --report=summary .
